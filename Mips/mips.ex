@@ -90,6 +90,16 @@ defmodule Emulator do
             out = Out.put(out,Register.read(reg,rd) )  
             run(pc, code, reg, mem, out)
 
+@type inst() :: 
+| {:add, rd,rs,rt}
+| {:addi, rd,rs,imm}
+| {:sub, rd,rs,rt}
+| {:bne,rd,rs,label}
+| {:sw,rt,imm,rs}
+| {:lw,rt,imm,rs}
+| {:halt}
+| {:out, rs}
+
             {:sub, rd,rs,rt}->
             pc = pc + 1
             reg = Register.write(reg,rd, Register.read(reg,rs) - Register.read(reg,rt))
@@ -110,4 +120,6 @@ defmodule Emulator do
 
  #implement tree
   end
+
+
 end

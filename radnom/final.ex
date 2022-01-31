@@ -21,17 +21,19 @@ defmodule Register do
     def write(reg,index,val) do put_elem(reg,index,val) end
  end
 defmodule Program do
-    def load([],_,{code,data}) do {{:code, List.to_tuple( removelabel(code,[],data))},data }  end #code returnes as tupple and data as a list: 
-    def load([h|t],counter,{code,data}) do  #first call load(prgm,0,{[],[]})
+    def load([],_,{code,data}) do {{:code, List.to_tuple( removelabel(code,[],data))},data }  end #code returnes as tupple and data as a list
+    def load([h|t],counter,{code,data}) do 
         case h do
             {:label,name}->load(t,counter+1,{code,[{name,counter}|data]})
+
              n->load(t,counter+1,{[n|code],data})
+        
         end
     end
-    def removelabel([],removed,_) do removed end #kallas som removelabel(code,[],data)
+    def removelabel([],removed,_) do removed end #kallas som removelabel(code,[],data,0)
     def removelabel([h|t],removed,data) do 
-        case h do                                               #:loop --> 6
-        {:bne,rd,rs,label}->  removelabel(t, [{:bne,rd,rs,lookup(data,label)}|removed] ,data)
+        case h do 
+        {:bne,rd,rs,label}->  removelabel(t,[{:bne,rd,rs,lookup(data,label)}|removed],data)
         
         n-> removelabel(t,[n|removed],data)
         end 
@@ -139,7 +141,7 @@ defmodule Emulator do
             {:add, rd,rs,rt}->
                 pc = pc + 1
                 reg = Register.write(reg,rd, Register.read(reg,rs) + Register.read(reg,rt))
-                out = Out.put(out,Register.read(reg,rd)) 
+                out = Out.put(out,Register.read(reg,rd) ) 
                 run(pc, code, reg, data, out,mem)
 
             {:addi, rd,rs,imm}->
