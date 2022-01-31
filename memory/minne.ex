@@ -50,9 +50,31 @@ defmodule Program do
 
  defmodule Mem do 
     def new() do [] end
-    def input do  end
-    def save(mem,index,val) do put_elem(mem,index,val) end
 
+    def read([h|t],addr) do 
+        case h do 
+            []->0
+            {^addr,val}->val
+            _->read(t,addr)
+        end
+    end
+
+    def write(mem,addr,val) do 
+        if member(mem,addr) do
+        find(mem,addr,[],val) 
+        else
+        [{addr,val}|mem]
+        end
+    end
+
+    def member([],_) do false end
+    def member([h|_],h) do true end
+    def member([_|t],addr) do member(t,addr) end
+
+    def find([],_,list,_) do list end
+    def find([{addr,_}|t],addr,list,val) do find(t,addr,[{addr,val}|list],val) end
+    def find([h|t],addr,list,val) do find(t,addr,[h|list],val) end
+   
  end
 
 #[{:addi, 1, 0, 5}, # $1 <- 5
@@ -65,69 +87,98 @@ defmodule Program do
 #{:bne, 4, 0, :loop}, # branch if not equal
 #:halt]
 
+#[{:addi, 1, 0, 5}, # $1 <- 5
+#{:lw, 2, 0, :arg}, # $2 <- data[:arg]
+#{:add, 4, 2, 1}, # $4 <- $2 + $1
+#{:addi, 5, 0, 1}, # $5 <- 1
+#{:sub, 4, 4, 5}, # $4 <- $4 - $5
+#{:out, 4}, # out $4
+#{:bne, 4, 0, :loop}, # branch if not equal
+#:halt]
+
+#[{:addi, 1, 0, 5}, # $1 <- 5
+#{:lw, 2, 0, 12}, # $2 <- data[:arg]
+#{:add, 4, 2, 1}, # $4 <- $2 + $1
+#{:addi, 5, 0, 1}, # $5 <- 1
+#{:sub, 4, 4, 5}, # $4 <- $4 - $5
+#{:out, 4}, # out $4
+#{:bne, 4, 0, 4}, # branch if not equal
+#:halt]
+
 
 defmodule Emulator do
 
     def run() do
-        #{code, data} = Program.load(prgm)
-        prgm = [{:addi,1,0,50},{:addi,2,1,25},{:sub,3,2,1},{:addi,5,0,10},{:label, :loop},{:addi,6,6,1},{:bne,5,6,:loop},{:halt}]
+        #{code, data} = Program.load(prgm)            value är 50 i addr 5
+        prgm = [{:addi,1,0,50},{:addi,2,1,25},{:sub,3,2,1},{:sw,1,5,0},{:lw,8,5,0},{:addi,5,0,10},{:label, :loop},{:addi,6,6,1},{:bne,5,6,:loop},{:halt}]
         {code,data} = Program.load(prgm,0,{[],[]})
         #data = Program.getdata(prgm,0,[])
-        
+        mem = Mem.new()
         out = Out.new()
         IO.puts("\n Instructions: ")
         IO.inspect(code) #1
         IO.puts("\n Labels and pc: ")
         IO.inspect(data) #2
+        IO.puts("\n")
         reg = Register.new()
-        run(0, code, reg, data, out)
+        run(0, code, reg, data, out,mem)
     end
 
-    def run(pc, code, reg, mem, out) do
+    def run(pc, code, reg, data, out,mem) do
         next = Program.read_instruction(code, pc)
         #IO.inspect({pc,out})
         case next do
-            {:halt}->{"Output:  " ,Out.close(out)}
+            {:halt}->{"Output:  " ,Out.close(out), reg, "                    mem: ",mem}
 
-            {:label,_sum}-> run(pc+1, code, reg, mem, out)
+            {:label,_sum}-> run(pc+1, code, reg, data, out,mem)
 
             {:out, rs}->
                 pc = pc + 1
                 s = Register.read(reg, rs)
                 out = Out.put(out, s)
-                run(pc, code, reg, mem, out)
+                run(pc, code, reg, data, out,mem)
 
             {:add, rd,rs,rt}->
                 pc = pc + 1
                 reg = Register.write(reg,rd, Register.read(reg,rs) + Register.read(reg,rt))
                 out = Out.put(out,Register.read(reg,rd) ) 
-                run(pc, code, reg, mem, out)
+                run(pc, code, reg, data, out,mem)
 
             {:addi, rd,rs,imm}->
                 pc = pc + 1
                 reg = Register.write(reg,rd, Register.read(reg,rs) + imm)
                 out = Out.put(out,Register.read(reg,rd) )  
-                run(pc, code, reg, mem, out)
+                run(pc, code, reg, data, out,mem)
 
             {:sub, rd,rs,rt}->
                 pc = pc + 1
                 reg = Register.write(reg,rd, Register.read(reg,rs) - Register.read(reg,rt))
                 out = Out.put(out,Register.read(reg,rd))  
-                run(pc, code, reg, mem, out)
+                run(pc, code, reg, data, out,mem)
 
-            {:bne,rd,rs,val}->  #ett mer dynamiskt system för att hitta pc måste fixas
-            pc = pc + 1
+            {:bne,rd,rs,imm}->  
+                pc = pc + 1
             #val = Mem.lookup(mem,label)
-
             #IO.inspect(Register.read(reg,rd))
             #IO.inspect(Register.read(reg,rs))
-            if  Register.read(reg,rd) != Register.read(reg,rs) do  run(val, code, reg, mem, out)
+            if Register.read(reg,rd) != Register.read(reg,rs) do  run(imm, code, reg, data, out,mem)
             else
-            run(pc, code, reg, mem, out)end
-    end
+                run(pc, code, reg, data, out,mem)
+            end
+            #rt är value och addr blir rs+imm
+            {:sw,rt,imm,rs}->
+                pc = pc + 1
+                mem = Mem.write(mem,imm + Register.read(reg,rs),Register.read(reg,rt))
+                run(pc, code, reg, data, out,mem)
 
- #implement tree
-  end
+            {:lw,rt,imm,rs}->
+                pc = pc + 1
+
+                reg = Register.write(reg,rt, Mem.read(mem,imm+Register.read(reg,rs)))
+                
+                run(pc, code, reg, data, out,mem)
+        end
+    end
 end
 
 
