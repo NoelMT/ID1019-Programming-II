@@ -39,12 +39,32 @@ def list_insert(e, [h|t]) do
  end
 
 
-
-  def tree_new() do "chill" end
+#frågor till föreläsning:
+#1. ska man kolla om det nya värdet är member i trädet sen skriva över det eller ska man vara stoppa in saker
+#2.
   
-  def tree_insert(e, l) do 
-     "andra chill"
-  end
+def tree_new do :nil end
+
+def tree_insert(e, :nil)  do  {:leaf,e}  end
+def tree_insert(e, {:leaf, v}) when e < v  do  {:node,v,{:leaf,e},nil}   end
+def tree_insert(e, {:leaf, v}) do  {:node,v,nil,{:leaf,e}}   end
+def tree_insert(e, {:node, v, left, right }) when e < v do
+   {:node, v, tree_insert(e,left), right }
+end
+def tree_insert(e, {:node, v, left, right })  do
+   {:node, v,left, tree_insert(e,right)}
+end
 
   end
 
+# benchmark of lists and tree rimliga värden?
+#0                       0
+#0                       0
+#0                       0
+#102                     0
+#102                     0
+#819                     102
+#3686                    307
+#17100                   1536
+#62259                   1843
+#258969                  4403
