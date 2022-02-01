@@ -8,12 +8,12 @@
      #klar
 defmodule Out do 
     def new() do [0] end
-    def put(out,s) do [s|out]  end 
+    def put(out,s) do [s|out] end 
     def close(out) do Enum.to_list(out) end
 end
 
 #klar
-defmodule Register do
+defmodule Register do #register 0 är alltid 0
     def new() do
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} end 
     def read(reg,index) do
@@ -42,14 +42,14 @@ defmodule Program do
     def lookup([_|t],label) do lookup(t,label) end
 
 
-    def read_instruction({:code,inst},pc) do elem(inst,pc) end
+    def read_instruction({:code,inst},pc) do elem(inst,pc) end #if pc increment by 4 devide pc by 4
  end
 
 
  defmodule Mem do 
     def new() do [] end
 
-    def read([h|t],addr) do 
+    def read([h|t],addr) do   #[{30,2000},{560,7}{30,2000}{30,2000}{30,2000}]
         case h do 
             []->0
             {^addr,val}->val
@@ -72,7 +72,6 @@ defmodule Program do
     def find([],_,list,_) do list end
     def find([{addr,_}|t],addr,list,val) do find(t,addr,[{addr,val}|list],val) end
     def find([h|t],addr,list,val) do find(t,addr,[h|list],val) end
-   
  end
 
 #[{:addi, 1, 0, 5}, # $1 <- 5
@@ -171,9 +170,7 @@ defmodule Emulator do
 
             {:lw,rt,imm,rs}->
                 pc = pc + 1
-
                 reg = Register.write(reg,rt, Mem.read(mem,imm+Register.read(reg,rs)))
-                
                 run(pc, code, reg, data, out,mem)
         end
     end
