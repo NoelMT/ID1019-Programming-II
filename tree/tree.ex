@@ -12,3 +12,8 @@ def insert(e, {:node, v, left, right })  do
    {:node, v,left, insert(e,right) }
 end
 end
+
+@type inst() ::  :nil |
+ {:leaf,e}
+ {:node, v, left, right }
+ 

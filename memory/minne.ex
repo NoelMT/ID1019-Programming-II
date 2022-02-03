@@ -125,9 +125,9 @@ defmodule Emulator do
         next = Program.read_instruction(code, pc)
         #IO.inspect({pc,out})
         case next do
-            {:halt}->{"Output:  " ,Out.close(out), reg, "                    mem: ",mem}
+            {:halt}->{"Output:  " ,Out.close(out),"Registers: " ,reg, "                   mem: ",mem}
 
-            {:label,_sum}-> run(pc+1, code, reg, data, out,mem)
+            #{:label,_sum}-> run(pc+1, code, reg, data, out,mem)
 
             {:out, rs}->
                 pc = pc + 1

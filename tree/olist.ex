@@ -9,5 +9,4 @@ def list_insert(e, [h|t]) do
             e>h-> [h|list_insert(e,t)]
         end
  end
-
 end
