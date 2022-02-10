@@ -21,8 +21,8 @@ defmodule Bench do
         List.foldr(seq, tree_new(), fn (e, acc) -> tree_insert(e, acc) end)
       end      
 
-      tl = time.(i, list) 
-      tt = time.(i, tree)     
+      tl = time.(i, list)
+      tt = time.(i, tree)
 
       IO.write("  #{tl}\t\t\t#{tt}\n")
     end

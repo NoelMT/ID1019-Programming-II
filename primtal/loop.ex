@@ -1,11 +1,28 @@
 defmodule Bench do
     def test() do Dummy.dumdum(1000000) end
     def test(n) do
+    { (elem(:timer.tc(Lo, :loop1, [5,n]),0)) / :math.pow(5,6), elem(:timer.tc(Lo, :loop2, [5,n]),0)/ :math.pow(10,6) , elem(:timer.tc(Lo, :loop3, [10,n]),0)/ :math.pow(10,6)}
 
-    { (elem(:timer.tc(Pett, :prim, [n]),0)) / :math.pow(10,6), elem(:timer.tc(Ptva, :prim, [n]),0)/ :math.pow(10,6) , elem(:timer.tc(Ptre, :prim, [n]),0)/ :math.pow(10,6)}
-     
+    end
+  end
+  defmodule Lo do 
+  def loop1(0,_) do :ok end
+    def loop1(n,l) do
+    Pett.prim(l)
+    loop1(n-1,l)
     end
 
+    def loop2(0,_) do :ok end
+    def loop2(n,l) do
+    Ptva.prim(l)
+    loop2(n-1,l)
+    end
+
+    def loop3(0,_) do :ok end
+    def loop3(n,l) do
+    Ptre.prim(l)
+    loop3(n-1,l)
+    end
   end
 #Enum.map([500,1000,3000,6000,10000],&Bench.test/1)
 defmodule Dummy do
