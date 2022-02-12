@@ -3,15 +3,12 @@ defmodule Bench do
     def test(n) do
 
     { (elem(:timer.tc(Pett, :prim, [n]),0)) / :math.pow(10,6), elem(:timer.tc(Ptva, :prim, [n]),0)/ :math.pow(10,6) , elem(:timer.tc(Ptre, :prim, [n]),0)/ :math.pow(10,6)}
-     
     end
-
   end
 #Enum.map([500,1000,3000,6000,10000],&Bench.test/1)
 defmodule Dummy do
 def dumdum(0) do Enum.map([10000,15000,20000,25000,30000,35000,40000,45000,50000],&Bench.test/1) end
 def dumdum(n) do dumdum(n-1) end
-
 end
 
 defmodule Pett do
@@ -43,8 +40,7 @@ defmodule Ptva do
     prim(t,check(h,plist))
     end
     def prim(n) do 
-    prim(Enum.to_list(2..n),[])
-    end
+    prim(Enum.to_list(2..n),[]) end
 
 #metod som tar emot element och lista, kollar om elementet är delbar med 
 #med något tal i listat, listan iteraras till slut och sätter in element på slutet
@@ -92,8 +88,6 @@ def reverse([h|t],list) do reverse(t,[h|list]) end
 end
 
 
-#trean e långsamast eftersom listan måste vändas om en extra gång
+#trean e långsamast eftersom listan måste vändas om en extra gång och den är i decsending order
 
 
-
-#0.000178 + 0.000228 
