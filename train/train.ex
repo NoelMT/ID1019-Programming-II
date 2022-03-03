@@ -37,7 +37,6 @@ end
 def single(move,input) do
 {track,nr} = move
 {main,one,two} = input
-
 cond do
     track == :one and nr > 0 -> {take(main,length(main)-nr),append(drop(main,length(main)-nr),one),two}
     track ==:one and nr < 0 -> {append(main,take(one,nr*-1)),drop(one,nr*-1),two} 
@@ -47,8 +46,6 @@ cond do
 
     nr == 0 -> {main,one,two}
 end
-
-
 end
 
 def move([],state) do [state] end
