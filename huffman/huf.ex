@@ -27,6 +27,23 @@ def time do
 {{"READ: " ,time},{"HUFFMAN TREE: ",time2},{"ENCODE TABLE: ",time3},{"ENCODE: ",time4},{"DECODE: ",time5} , {"ENODED BITS: ", length(ans4) }, {"NORMAL BITS: ", length(ans)*8 }}
 end
 
+
+
+def tester(text) do 
+{time,ans} = bench(fn()-> read(text) end)
+#IO.inspect(ans)
+{time2,ans2} = bench(fn()-> tree(ans) end)
+#IO.inspect(ans2)
+{time3,ans3} = bench(fn()-> encode_table(ans2) end)
+#IO.inspect(ans3)
+{time4,ans4} = bench(fn()-> encode(read(text),ans3) end)
+#IO.inspect(ans4)
+
+{time5,ans5} = bench(fn()-> decode(ans4,ans3) end)
+#IO.inspect(List.to_string(ans5))
+{{"READ: " ,time},{"HUFFMAN TREE: ",time2},{"ENCODE TABLE: ",time3},{"ENCODE: ",time4},{"DECODE: ",time5} , {"ENODED BITS: ", length(ans4) }, {"NORMAL BITS: ", length(ans)*8 }}
+end
+
 def test do
 sample = text()
 

@@ -68,19 +68,25 @@ y = trunc(255*(a-x))
 
 #red
 case x do
-      0 ->
-        {:rgb, y, 20, 120}
-      1 ->
-        {:rgb, 90, y, 170}
-
-      2 ->
-        {:rgb, 20, 160, 255 - y}
-
-      3 ->
-        {:rgb, y, 160, 0}
-
-      4 ->
-        {:rgb, 160, 255 - y,0 }
+   0 ->
+      #black to darkblue
+      {:rgb, trunc(y/2), 0,  y }
+     
+      #white to blue
+    1 ->
+      {:rgb, 255-y, 255-y,  255 }
+      
+      #black
+    2 ->
+     {:rgb, y, 0, 255}
+      #black
+    3 ->
+      {:rgb, 0, 255 - y, 255}
+      #{:rgb, 255, y, 0}
+      #black
+    4 ->
+      {:rgb, 0, 255 - y, 255}
+     #{:rgb, 255-y, y, 0}
     end
 
 end
@@ -110,17 +116,80 @@ end
 
 
 end
-
+#-1.6, 0.2, 0.2 cords report
 defmodule Test do 
 def demo() do
-small(-1.6, 0.2, 0.2)
+small(-3.5, 1.2, 1.2)
 end
 def small(x0, y0, xn) do
-width = 960
-height = 540
-depth = 750
+width = 1280
+height = 640
+depth = 50
 k = (xn - x0) / width
 image = Mandel.mandelbrot(width, height, x0, y0, k, depth)
-PPM.write("small5.ppm", image)
+PPM.write("git.ppm", image)
 end
 end
+
+
+
+  #0 ->
+        #black to blue
+ #       {:rgb, 0, 0, y}
+        #blue to purple
+  #    1 ->
+ #      {:rgb, 255-y, 0,  255-y }
+        
+        #purple to 
+ #     2 ->
+  #     {:rgb, 255-y, 0, y}
+
+  #    3 ->
+  #      {:rgb, 0, 255, y}
+  #    4 ->
+  #      {:rgb, 0, 255 - y, 255}
+#    end
+
+
+
+#0 ->
+#       #black to darkblue
+#       {:rgb, trunc(y/2), 0,  y }
+#      
+#       #white to blue
+#     1 ->
+#       {:rgb, 255-y, 255-y,  255 }
+#       
+#       #black
+#     2 ->
+#      {:rgb, 0, 0, 0}
+#       #black
+#     3 ->
+#       {:rgb, 0, 0, 0}
+#       #black
+#     4 ->
+#       {:rgb, 0, 0, 0}
+
+
+
+
+
+#0 ->
+#       #black to darkblue
+#       {:rgb, trunc(y/2), 0,  y }
+#      
+#       #white to blue
+#     1 ->
+#       {:rgb, 255-y, 255-y,  255 }
+#       
+#       #black
+#     2 ->
+#      {:rgb, y, 0, 255}
+#       #black
+#     3 ->
+#       {:rgb, 0, 255 - y, 255}
+#       #{:rgb, 255, y, 0}
+#       #black
+#     4 ->
+#       {:rgb, 0, 255 - y, 255}
+#      #{:rgb, 255-y, y, 0}
